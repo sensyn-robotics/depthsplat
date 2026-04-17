@@ -17,10 +17,12 @@ OUTPUT_NAME="${OUTPUT_NAME:-depthsplat-gs-${SCENE_KEY}}"
 CHECKPOINT="pretrained/depthsplat-gs-small-re10kdl3dv-448x768-randview4-10-c08188db.pth"
 CHECKPOINT_URL="https://huggingface.co/haofeixu/depthsplat/resolve/main/depthsplat-gs-small-re10kdl3dv-448x768-randview4-10-c08188db.pth"
 
-# 8 evenly spaced context views over 825 frames and one arbitrary target.
-CONTEXT_VIEWS="${CONTEXT_VIEWS:-[0,117,235,353,471,589,707,824]}"
+# 4 evenly spaced context views over 825 frames and one arbitrary target.
+# (The checkpoint supports 4-10 views; 4 keeps cost-volume memory low enough
+# for ~12 GB GPUs. Raise NUM_CONTEXT / CONTEXT_VIEWS on bigger hardware.)
+CONTEXT_VIEWS="${CONTEXT_VIEWS:-[0,275,549,824]}"
 TARGET_VIEWS="${TARGET_VIEWS:-[412]}"
-NUM_CONTEXT="${NUM_CONTEXT:-8}"
+NUM_CONTEXT="${NUM_CONTEXT:-4}"
 IMAGE_SHAPE="${IMAGE_SHAPE:-[448,768]}"
 
 # 1. Convert COLMAP -> .torch if not already present.
@@ -53,9 +55,9 @@ CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}" uv run python -m src.main +exp
   +dataset.view_sampler.target_views="${TARGET_VIEWS}" \
   dataset.image_shape="${IMAGE_SHAPE}" \
   dataset.skip_bad_shape=false \
-  model.encoder.upsample_factor=4 \
+  model.encoder.upsample_factor=8 \
   model.encoder.lowest_feature_resolution=8 \
-  model.encoder.monodepth_vit_type=vitb \
+  model.encoder.gaussian_adapter.gaussian_scale_max=0.1 \
   checkpointing.pretrained_model="${CHECKPOINT}" \
   test.compute_scores=false \
   test.save_gaussian=true \

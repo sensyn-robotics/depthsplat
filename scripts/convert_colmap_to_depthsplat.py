@@ -26,6 +26,7 @@ Usage:
 """
 
 import argparse
+import json
 import struct
 from pathlib import Path
 
@@ -181,7 +182,12 @@ def main():
     chunk_path = stage_dir / "000000.torch"
     torch.save([example], chunk_path)
 
+    index_path = stage_dir / "index.json"
+    with index_path.open("w") as f:
+        json.dump({args.scene_key: chunk_path.name}, f, indent=2)
+
     print(f"Saved chunk: {chunk_path}")
+    print(f"Saved index: {index_path}")
     print(f"  scene_key  : {args.scene_key}")
     print(f"  cameras    : {example['cameras'].shape}  (N, 18)")
     print(f"  images     : {len(example['images'])} frames (raw bytes)")
