@@ -11,7 +11,7 @@ matplotlib==3.9.1
 moviepy==1.0.3
 numpy==1.24.4
 opencv_python==4.11.0.86
-Pillow==10.4.0
+Pillow==12.3.0
 plyfile==1.1
 pytorch_lightning==2.4.0
 scikit-image==0.24.0
